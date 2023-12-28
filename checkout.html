@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .total {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .btn-selesai {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-selesai:hover {
+      background-color: #45a049;
+    }
+  </style>
+  <title>Rangkuman Pembelian</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Rangkuman Pembelian</h1>
+    <div id="cart-container"></div>
+    <div class="total" id="total-container"></div>
+    <button class="btn-selesai" onclick="selesai()">Selesai</button>
+  </div>
+
+  <script>
+    const cartContainer = document.getElementById('cart-container');
+    const totalContainer = document.getElementById('total-container');
+    const btnSelesai = document.querySelector('.btn-selesai');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function renderCart() {
+      cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `
+          <span>${item.menu.menu} - ${item.quantity}x</span>
+          <span>Rp ${item.menu.harga * item.quantity}</span>
+        `;
+        cartContainer.appendChild(cartItem);
+      });
+    }
+
+    function calculateTotal() {
+      const totalHarga = cart.reduce((total, item) => total + item.menu.harga * item.quantity, 0);
+      totalContainer.textContent = `Total Harga: Rp ${totalHarga}`;
+    }
+
+    function selesai() {
+      // Reset cart and redirect to index.html
+      localStorage.removeItem('cart');
+      window.location.href = 'index.html';
+    }
+
+    renderCart();
+    calculateTotal();
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .menu-item button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .menu-item button:hover {
+      background-color: #45a049;
+    }
+
+    .quantity-input {
+      width: 30px;
+      text-align: center;
+    }
+  </style>
+  <title>Rumah Makan Soto</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Rumah Makan Soto</h1>
+    <div id="pricelist-container"></div>
+    <button onclick="checkout()">Checkout</button>
+    <button onclick="resetCart()">Reset</button>
+  </div>
+
+  <script>
+    const pricelistContainer = document.getElementById('pricelist-container');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    const pricelist = [
+      { id: 1, menu: 'Soto Ayam', harga: 15000 },
+      { id: 2, menu: 'Soto Daging', harga: 18000 },
+      { id: 3, menu: 'Soto Seafood', harga: 20000 },
+      // Tambahkan menu lainnya jika diperlukan
+    ];
+
+    function renderPricelist() {
+      pricelist.forEach(menu => {
+        const menuItem = document.createElement('div');
+        menuItem.classList.add('menu-item');
+        menuItem.innerHTML = `
+          <span>${menu.menu} - Rp ${menu.harga}</span>
+          <input type="number" class="quantity-input" id="quantity-${menu.id}" value="0" min="0">
+          <button onclick="addToCart(${menu.id})">Beli</button>
+        `;
+        pricelistContainer.appendChild(menuItem);
+      });
+    }
+
+    function addToCart(menuId) {
+      const quantityInput = document.getElementById(`quantity-${menuId}`);
+      const quantity = parseInt(quantityInput.value, 10);
+
+      if (quantity > 0) {
+        const selectedMenu = pricelist.find(menu => menu.id === menuId);
+        const itemInCart = cart.find(item => item.menu.id === menuId);
+
+        if (itemInCart) {
+          itemInCart.quantity += quantity;
+        } else {
+          cart.push({ menu: selectedMenu, quantity });
+        }
+
+        // Reset the quantity input to 0
+        quantityInput.value = 0;
+
+        // Save cart to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        console.log('Menu ditambahkan ke keranjang belanja', cart);
+      }
+    }
+
+    function checkout() {
+      // Tambahkan logika untuk proses checkout
+      if (cart.length > 0) {
+        console.log('Proses checkout...');
+        console.log('Isi keranjang belanja:', cart);
+        console.log('Total Harga: Rp', calculateTotal());
+        
+        // Redirect to checkout.html
+        window.location.href = 'checkout.html';
+      } else {
+        console.log('Keranjang belanja kosong. Silakan pilih menu terlebih dahulu.');
+      }
+      
+    }
+
+    function resetCart() {
+      // Tambahkan logika untuk mereset keranjang belanja
+      cart.length = 0;
+      localStorage.removeItem('cart');
+      console.log('Keranjang belanja telah direset');
+    }
+
+    function calculateTotal() {
+      return cart.reduce((total, item) => total + item.menu.harga * item.quantity, 0);
+    }
+
+    renderPricelist();
+  </script>
+</body>
+</html>
